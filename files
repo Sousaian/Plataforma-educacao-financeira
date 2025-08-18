@@ -1,0 +1,208 @@
+// lib/mock-db.ts
+function simulateReturn(
+  assetId: string,
+  months: number,
+  principal: number
+): {
+  ok: boolean
+  series: { t: number; v: number }[]
+  expectedFinal: number
+  expectedYield: number
+  monthlyRate: number
+  maturity: number
+  message?: string
+} {
+  const assets = listSimAssets()
+  const asset = assets.find((a) => a.id === assetId)
+  const now = Date.now()
+  if (!asset) {
+    return { ok: false, series: [], expectedFinal: 0, expectedYield: 0, monthlyRate: 0, maturity: now, message: "Ativo inexistente" }
+  }
+  if (!Number.isFinite(months) || months <= 0) {
+    return { ok: false, series: [], expectedFinal: 0, expectedYield: 0, monthlyRate: asset.monthlyRate, maturity: now, message: "Prazo inválido" }
+  }
+  if (!Number.isFinite(principal) || principal <= 0) {
+    return { ok: false, series: [], expectedFinal: 0, expectedYield: 0, monthlyRate: asset.monthlyRate, maturity: now, message: "Valor inválido" }
+  }
+
+  let value = principal
+  const start = now
+  const maturity = start + months * MS_MONTH
+  const series: { t: number; v: number }[] = [{ t: start, v: value }]
+
+  for (let m = 1; m <= months; m++) {
+    let rate = asset.monthlyRate + monthVolatility(asset.id, m, asset.risk)
+    if (asset.risk === "Variável") {
+      rate += variableAdjustment(m)
+    }
+    value = value * (1 + rate)
+    series.push({ t: start + m * MS_MONTH, v: value })
+  }
+
+  const expectedFinal = value
+  const expectedYield = expectedFinal - principal
+
+  return {
+    ok: true,
+    series,
+    expectedFinal,
+    expectedYield,
+    monthlyRate: asset.monthlyRate,
+    maturity,
+  }
+}
+
+function confirmInvestment(assetId: string, principal: number): { ok: boolean, error?: string } {
+  if (!Number.isFinite(principal) || principal <= 0) {
+    return { ok: false, error: "Valor inválido" }
+  }
+  // Existing code here
+}
+
+// app/(app)/simulator/page.tsx
+"use client"
+import React, { useState, useMemo } from "react"
+import InvestmentChart from "@/components/investment-chart"
+import { Button } from "@/components/ui/button"
+import { assets } from "@/lib/mock-db"
+import { simulateReturn } from "@/lib/mock-db"
+
+const MS_MONTH = 30 * 24 * 60 * 60 * 1000 // Simplified month in milliseconds
+
+export default function SimulatorPage() {
+  const [amount, setAmount] = useState<number>(0)
+  const [term, setTerm] = useState<number>(0)
+  const [assetId, setAssetId] = useState<string>("")
+  const [sim, setSim] = useState<{ ok: boolean, series: { t: number, v: number }[], expectedFinal: number, expectedYield: number, monthlyRate: number, maturity: number } | null>(null)
+
+  const isValidAmount = Number.isFinite(amount) && amount > 0
+
+  const runSimulation = () => {
+    const result = simulateReturn(assetId, term, amount)
+    setSim(result)
+  }
+
+  const comparative = useMemo(() => {
+    const safeAmt = Number.isFinite(amount) && amount > 0 ? amount : 0
+    const list = assets.map((a) => {
+      const s = simulateReturn(a.id, term, safeAmt)
+      return { asset: a, result: s }
+    })
+    const max = Math.max(...list.map((x) => (x.result.ok ? x.result.expectedFinal : 0), 0)
+    return { list, max }
+  }, [assets, term, amount])
+
+  return (
+    <div>
+      <div>
+        <input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} placeholder="Valor" />
+        <input type="number" value={term} onChange={(e) => setTerm(Number(e.target.value))} placeholder="Prazo (meses)" />
+        <select value={assetId} onChange={(e) => setAssetId(e.target.value)}>
+          {assets.map((asset) => (
+            <option key={asset.id} value={asset.id}>{asset.name}</option>
+          ))}
+        </select>
+        <Button
+          onClick={runSimulation}
+          style={{ backgroundColor: "#0A2540", color: "#FFFFFF" }}
+          disabled={!isValidAmount || !assetId || !term}
+        >
+          Simular retorno
+        </Button>
+      </div>
+      {sim?.ok && (
+        <div>
+          <InvestmentChart data={sim.series} />
+          <div>
+            <p>Valor Final Esperado: {sim.expectedFinal}</p>
+            <p>Rendimento Esperado: {sim.expectedYield}</p>
+          </div>
+        </div>
+      )}
+      <div>
+        <h2>Comparativo</h2>
+        {comparative.list.map((item) => (
+          <div key={item.asset.id}>
+            <p>{item.asset.name}</p>
+            {item.result.ok && (
+              <div>
+                <p>Valor Final Esperado: {item.result.expectedFinal}</p>
+                <p>Rendimento Esperado: {item.result.expectedYield}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// components/investment-chart.tsx
+"use client"
+import React from "react"
+
+type Point = { t: number; v: number }
+export function InvestmentChart({
+  data,
+  width = 600,
+  height = 200,
+  stroke = "#0A2540",
+}: {
+  data: Point[]
+  width?: number
+  height?: number
+  stroke?: string
+}) {
+  const pad = 24
+  const w = width
+  const h = height
+
+  const cleaned = (Array.isArray(data) ? data : []).filter(
+    (d) => Number.isFinite(d?.t) && Number.isFinite(d?.v)
+  )
+
+  if (cleaned.length === 0) {
+    return (
+      <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Gráfico vazio">
+        <rect x="0" y="0" width={w} height={h} fill="#FFFFFF" />
+        {[0.25, 0.5, 0.75].map((p) => (
+          <line key={p} x1={pad} y1={p * h} x2={w - pad} y2={p * h} stroke="#E5E7EB" strokeDasharray="4 4" />
+        ))}
+      </svg>
+    )
+  }
+
+  const xs = cleaned.map((d) => d.t)
+  const ys = cleaned.map((d) => d.v)
+
+  const minX = Number.isFinite(Math.min(...xs)) ? Math.min(...xs) : 0
+  const maxX = Number.isFinite(Math.max(...xs)) ? Math.max(...xs) : minX + 1
+  const minY = Number.isFinite(Math.min(...ys)) ? Math.min(...ys) : 0
+  const maxY = Number.isFinite(Math.max(...ys)) ? Math.max(...ys) : minY + 1
+
+  const xDen = maxX - minX || 1
+  const yDen = maxY - minY || 1
+
+  const xScale = (x: number) => pad + ((x - minX) / xDen) * (w - 2 * pad)
+  const yScale = (y: number) => h - pad - ((y - minY) / yDen) * (h - 2 * pad)
+
+  const path = cleaned
+    .map((d, i) => `${i === 0 ? "M" : "L"} ${xScale(d.t)} ${yScale(d.v)}`)
+    .join(" ")
+
+  const last = cleaned[cleaned.length - 1]
+  const cx = xScale(last.t)
+  const cy = yScale(last.v)
+  const canDrawLast = Number.isFinite(cx) && Number.isFinite(cy)
+
+  return (
+    <svg width="100%" height={h} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Gráfico de valor do portfólio">
+      <rect x="0" y="0" width={w} height={h} fill="#FFFFFF" />
+      {[0.25, 0.5, 0.75].map((p) => (
+        <line key={p} x1={pad} y1={p * h} x2={w - pad} y2={p * h} stroke="#E5E7EB" strokeDasharray="4 4" />
+      ))}
+      <path d={path} fill="none" stroke={stroke} strokeWidth={2} />
+      {canDrawLast && <circle cx={cx} cy={cy} r={3} fill={stroke} />}
+    </svg>
+  )
+}
