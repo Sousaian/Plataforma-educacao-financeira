@@ -495,7 +495,7 @@ export function listStoreItems(): StoreItem[] {
     },
     {
       id: "st-danca",
-      name: "Emoji Gatinho Irado",
+      name: "Emoji Gatinho Irado!",
       description: "Emoji para seu avatar",
       category: "avatar",
       price: 60,
