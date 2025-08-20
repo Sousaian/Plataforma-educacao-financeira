@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Coins, LogOut, PanelLeft, Medal } from 'lucide-react'
+import { Coins, LogOut, PanelLeft, Medal, Gem } from 'lucide-react'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -26,7 +26,7 @@ export function AppTopbar() {
       <div className="flex items-center justify-between px-3 md:px-4 py-2">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
-          <PanelLeft className="hidden md:inline-block h-5 w-5 text-muted-foreground" aria-hidden />
+          <Gem className="hidden md:inline-block h-5 w-5 text-muted-foreground" style={{ color: "#0A2540" }} aria-hidden />
           <h1 className="font-semibold" style={{ color: "#0A2540" }}>
             Olá{user ? `, ${user.name.split(' ')[0]}` : ""}!
           </h1>
@@ -46,7 +46,7 @@ export function AppTopbar() {
                 <Medal className="h-3.5 w-3.5" />
                 {patent.name}
               </Badge>
-              <Image src={user.avatarUrl || "/placeholder.svg"} alt="Avatar do aluno" width={32} height={32} className="rounded-full border" />
+              <Image src={user.avatarUrl || "/placeholder.svg"} alt="Avatar do aluno" width={25} height={25} className="rounded-[7px] border" />
               <Button
                 variant="outline"
                 size="sm"

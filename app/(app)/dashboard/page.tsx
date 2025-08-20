@@ -50,7 +50,7 @@ export default function DashboardPage() {
                 alt="Avatar"
                 width={48}
                 height={48}
-                className="rounded-full border"
+                className="rounded-[7px] border"
               />
               <span>Bem-vindo(a), {user.name.split(" ")[0]}!</span>
             </CardTitle>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
             <Button asChild variant="outline" className="w-full bg-transparent">
               <Link href="/simulator">
                 <ChartLine className="h-4 w-4 mr-2" />
-                Praticar no Simulador
+                Começar a investir
               </Link>
             </Button>
           </CardContent>

@@ -485,21 +485,21 @@ export function listStoreItems(): StoreItem[] {
     },
     {
       id: "st-pele-ouro",
-      name: "Skin Ouro",
-      description: "Personalização dourada",
+      name: "Capacete de Bombeiro",
+      description: "Personalização de avatar",
       category: "avatar",
       price: 90,
-      imageUrl: "/images/store/skin-gold.png",
+      imageUrl: "/images/store/capaBomb.png",
       requiredPatentIndex: 3,
       requiredPatentName: "Ouro",
     },
     {
       id: "st-danca",
-      name: "Dança Especial",
-      description: "Animação para seu avatar",
+      name: "Emoji Gatinho Irado",
+      description: "Emoji para seu avatar",
       category: "avatar",
       price: 60,
-      imageUrl: "/images/store/dance.png",
+      imageUrl: "/images/store/gatinhofofo.gif",
     },
   ] satisfies StoreItem[]
   return pkg

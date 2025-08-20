@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import {
   LayoutDashboard,
   ListTodo,
@@ -40,7 +41,15 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 py-2">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-md" style={{ backgroundColor: "#0A2540" }} aria-hidden />
+          {/* <div className="h-8 w-8 rounded-md" style={{ backgroundColor: "#0A2540" }} aria-hidden /> */}
+          <Image 
+            src="/logo.png"
+              alt="Logo"
+              width={8}
+              height={8}
+              className="rounded-md h-8 w-8 object-cover"
+              style={{ backgroundColor: "#0A2540" }}
+          />
           <span className="font-semibold">EduInvest</span>
         </div>
       </SidebarHeader>
@@ -64,7 +73,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="text-xs text-muted-foreground px-3 pb-3">DLJ3 • MVP</SidebarFooter>
+      <SidebarFooter className="text-xs text-muted-foreground px-3 pb-3">DLJ3 • Next Stage</SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

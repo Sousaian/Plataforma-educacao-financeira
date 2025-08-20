@@ -6,7 +6,7 @@ import { ExternalLink, MapPin, Calendar, Users, GraduationCap, Briefcase } from 
 const opportunities = [
   {
     id: 1,
-    title: "Programa Jovem Aprendiz - Banco do Brasil",
+    title: "Programa Jovem Aprendiz",
     type: "Jovem Aprendiz",
     location: "São Paulo, SP",
     deadline: "15/12/2024",
@@ -17,18 +17,18 @@ const opportunities = [
   },
   {
     id: 2,
-    title: "ENEM 2024 - Inscrições Abertas",
+    title: "Vestibular 2024 - Inscrições Abertas",
     type: "Vestibular",
     location: "Nacional",
     deadline: "07/06/2024",
-    description: "Exame Nacional do Ensino Médio - principal porta de entrada para universidades públicas.",
+    description: "Exame do Ensino Médio - principal porta de entrada para universidades.",
     requirements: ["Ensino médio completo ou cursando o 3º ano"],
     icon: GraduationCap,
     color: "bg-green-500",
   },
   {
     id: 3,
-    title: "Feira de Profissões SENAI",
+    title: "Feira de Profissões",
     type: "Evento",
     location: "Centro de Convenções",
     deadline: "20/11/2024",
