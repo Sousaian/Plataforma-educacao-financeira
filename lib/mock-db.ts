@@ -94,7 +94,13 @@ export function subscribeDB(fn: Sub) {
 function notify() {
   for (const s of subs) s()
 }
+
+function isBrowser(): boolean {
+  return typeof window !== "undefined" && typeof localStorage !== "undefined"
+}
+
 function read<T>(key: string, fallback: T): T {
+  if (!isBrowser()) return fallback
   try {
     const raw = localStorage.getItem(key)
     return raw ? (JSON.parse(raw) as T) : fallback
@@ -102,12 +108,15 @@ function read<T>(key: string, fallback: T): T {
     return fallback
   }
 }
+
 function write<T>(key: string, value: T) {
+  if (!isBrowser()) return
   localStorage.setItem(key, JSON.stringify(value))
   notify()
 }
 
 function seedIfNeeded() {
+  if (!isBrowser()) return
   if (!localStorage.getItem(K_USERS)) {
     const avatars = listDefaultAvatars()
     const demoUsers: User[] = [
@@ -229,6 +238,7 @@ function seedIfNeeded() {
     write(K_TICK, Date.now())
   }
 }
+
 function mkUser(
   name: string,
   email: string,
@@ -260,6 +270,7 @@ function mkUser(
     achievements: [],
   }
 }
+
 function defaultMissions(): Mission[] {
   return [
     {
@@ -321,6 +332,7 @@ export function listDefaultAvatars() {
     { id: "av6", src: "/images/avatars/avatar-6.png", alt: "Avatar 6", free: true },
   ]
 }
+
 export function listAvatarOptions() {
   return [
     ...listDefaultAvatars(),
@@ -347,6 +359,7 @@ export function listAvatarOptions() {
 
 // Users
 function getUsers(): User[] {
+  if (!isBrowser()) return []
   seedIfNeeded()
   // Migrate missing fields
   const users = read<User[]>(K_USERS, [])
@@ -360,19 +373,24 @@ function getUsers(): User[] {
   }
   return users
 }
+
 function saveUsers(users: User[]) {
   write(K_USERS, users)
 }
+
 export function getCurrentUser(): User | null {
+  if (!isBrowser()) return null
   seedIfNeeded()
   const id = read<string | null>(K_CURRENT, null)
   if (!id) return null
   const u = getUsers().find((x) => x.id === id)
   return u || null
 }
+
 function setCurrentUser(id: string) {
   write(K_CURRENT, id)
 }
+
 export function login(email: string, password: string): boolean {
   const users = getUsers()
   const u = users.find((x) => x.email === email && x.password === password)
@@ -380,6 +398,7 @@ export function login(email: string, password: string): boolean {
   setCurrentUser(u.id)
   return true
 }
+
 export function signup({
   name,
   email,
@@ -397,6 +416,7 @@ export function signup({
   setCurrentUser(newU.id)
   return true
 }
+
 export function logout() {
   write(K_CURRENT, "")
 }
@@ -406,6 +426,7 @@ export function listMissionsForCurrent(): Mission[] {
   const u = getCurrentUser()
   return u ? u.missions : []
 }
+
 export function completeMission(missionId: string): { ok: true } | { ok: false; error?: string } {
   const users = getUsers()
   const uid = read<string | null>(K_CURRENT, null)
@@ -421,6 +442,7 @@ export function completeMission(missionId: string): { ok: true } | { ok: false; 
   saveUsers(users)
   return { ok: true }
 }
+
 export function addCoinsDemo(amount: number) {
   const users = getUsers()
   const uid = read<string | null>(K_CURRENT, null)
@@ -482,6 +504,7 @@ export function listStoreItems(): StoreItem[] {
   ] satisfies StoreItem[]
   return pkg
 }
+
 export function buyItem(itemId: string): { ok: true } | { ok: false; error?: string } {
   const users = getUsers()
   const uid = read<string | null>(K_CURRENT, null)
@@ -831,6 +854,7 @@ function getPrice(a: BaseAsset): number {
   const noise = (hash % 7) - 3
   return Math.max(50, base + drift + noise)
 }
+
 export function getPortfolioSeries(): { t: number; v: number }[] {
   const assets = listAssets()
   const u = getCurrentUser()

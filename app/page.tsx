@@ -9,13 +9,16 @@ import { GraduationCap } from "lucide-react"
 
 export default function HomePage() {
   const router = useRouter()
-  const [user, setUser] = useState(getCurrentUser())
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
-    if (!user) {
+    const currentUser = getCurrentUser()
+    setUser(currentUser)
+
+    if (!currentUser) {
       router.replace("/login")
     }
-  }, [user, router])
+  }, [router])
 
   if (!user) {
     return (
