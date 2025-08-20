@@ -850,7 +850,10 @@ export function getPortfolioSeries(): { t: number; v: number }[] {
       }, 0) ?? 0
     points.push({ t: time, v })
   }
-  setTimeout(() => write(K_TICK, Date.now()), 1000)
+
+  // This was triggering infinite re-renders by continuously updating the tick value
+  // setTimeout(() => write(K_TICK, Date.now()), 1000)
+
   return points
 }
 

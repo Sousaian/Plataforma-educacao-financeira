@@ -1,9 +1,11 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Lock, Mail, UserCircle } from 'lucide-react'
+import { Lock, Mail, UserCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -49,17 +51,36 @@ export default function LoginPage() {
               <Label htmlFor="email">E-mail</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="pl-9" />
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-9"
+                />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="pl-9" />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-9"
+                />
               </div>
             </div>
-            <Button type="submit" className="w-full" style={{ backgroundColor: "#0A2540", color: "#FFFFFF" }} disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              style={{ backgroundColor: "#0A2540", color: "#FFFFFF" }}
+              disabled={loading}
+            >
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>

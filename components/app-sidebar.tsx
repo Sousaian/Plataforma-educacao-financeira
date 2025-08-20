@@ -1,6 +1,14 @@
 "use client"
 
-import { LayoutDashboard, ListTodo, ShoppingBag, LineChartIcon as ChartLine, Trophy, UserCircle2 } from 'lucide-react'
+import {
+  LayoutDashboard,
+  ListTodo,
+  ShoppingBag,
+  LineChartIcon as ChartLine,
+  Trophy,
+  UserCircle2,
+  Briefcase,
+} from "lucide-react"
 import Link from "next/link"
 import {
   Sidebar,
@@ -21,7 +29,8 @@ const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Missões", url: "/missions", icon: ListTodo },
   { title: "Loja", url: "/store", icon: ShoppingBag },
-  { title: "Simulador", url: "/simulator", icon: ChartLine },
+  { title: "Investimentos", url: "/simulator", icon: ChartLine },
+  { title: "Oportunidades", url: "/opportunities", icon: Briefcase },
   { title: "Ranking", url: "/ranking", icon: Trophy },
   { title: "Perfil", url: "/profile", icon: UserCircle2 },
 ]

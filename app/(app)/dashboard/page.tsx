@@ -32,7 +32,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const unsub = subscribeDB(() => setTick((t) => t + 1))
     return () => unsub()
-  }, [])
+  }, []) // Empty dependency array ensures this only runs once
   const user = getCurrentUser()
   const patent = getPatent(user?.xp ?? 0)
   const prog = getNextPatentProgress(user?.xp ?? 0)
