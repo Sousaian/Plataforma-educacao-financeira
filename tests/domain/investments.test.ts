@@ -161,11 +161,68 @@ describe("getInvestmentSnapshots", () => {
     expect(at(90)).toMatchObject({ statusLabel: "Em vencimento", canWithdraw: true })
   })
 
-  it("mantém o comportamento legado: valor atual = principal", () => {
+  it("em andamento: valor atual = último ponto decorrido da série (2 de 3 meses)", () => {
     const { user } = invest(makeUser(), "CRIPTO", 3, 200)
-    const snap = getInvestmentSnapshots(user, assets, T0 + 45 * MS_DAY).active[0]
+    const series = simulateReturn(asset("CRIPTO"), 3, 200, T0).series
+    const snap = getInvestmentSnapshots(user, assets, T0 + 2 * MS_MONTH + 5 * MS_DAY).active[0]
+    expect(snap.series).toEqual(series.slice(0, 3))
+    expect(snap.currentValue).toBe(series[2].v)
+    expect(snap.currentYield).toBeCloseTo(series[2].v - 200, 10)
+    expect(snap.currentYield).not.toBe(0)
+  })
+
+  it("antes de completar o 1º mês o valor atual é o principal", () => {
+    const { user } = invest(makeUser(), "CRIPTO", 3, 200)
+    const snap = getInvestmentSnapshots(user, assets, T0 + 10 * MS_DAY).active[0]
     expect(snap.currentValue).toBe(200)
     expect(snap.currentYield).toBe(0)
+  })
+
+  it("projeta a partir de startAt mesmo para investimentos feitos depois de T0", () => {
+    const start = T0 + 7 * MS_DAY
+    const { user } = invest(makeUser(), "BOLSA", 3, 100, start)
+    const snap = getInvestmentSnapshots(user, assets, start + MS_MONTH).active[0]
+    expect(snap.series.map((p) => p.t)).toEqual([start, start + MS_MONTH])
+    expect(snap.currentValue).toBe(simulateReturn(asset("BOLSA"), 3, 100, start).series[1].v)
+  })
+
+  it("no vencimento o valor exibido bate com o valor creditado no resgate", () => {
+    const { user } = invest(makeUser(), "EMP", 3, 200)
+    const maturity = T0 + 3 * MS_MONTH
+    const snap = getInvestmentSnapshots(user, assets, maturity).active[0]
+    const res = withdrawMatured(user, assets, user.investments[0].id, ctxAt(maturity))
+    if (!res.ok) throw new Error(res.error)
+    expect(snap.canWithdraw).toBe(true)
+    expect(snap.currentValue).toBe(res.finalValue)
+    // após o vencimento o valor exibido fica no valor final
+    expect(getInvestmentSnapshots(user, assets, maturity + 40 * MS_DAY).active[0].currentValue).toBe(res.finalValue)
+  })
+
+  it("resgate tardio credita o mesmo valor (volatilidade independe do instante inicial)", () => {
+    const { user } = invest(makeUser(), "EMP", 3, 200)
+    const onTime = withdrawMatured(user, assets, user.investments[0].id, ctxAt(T0 + 3 * MS_MONTH))
+    const late = withdrawMatured(user, assets, user.investments[0].id, ctxAt(T0 + 9 * MS_MONTH))
+    if (!onTime.ok || !late.ok) throw new Error("resgate falhou")
+    expect(late.finalValue).toBe(onTime.finalValue)
+    expect(onTime.finalValue).toBe(simulateReturn(asset("EMP"), 3, 200, T0 + 12345).expectedFinal)
+  })
+
+  it("encerrado: usa finalValue/finalYield gravados no resgate", () => {
+    const { user } = invest(makeUser(), "SABER", 3, 200)
+    const res = withdrawMatured(user, assets, user.investments[0].id, ctxAt(T0 + 3 * MS_MONTH))
+    if (!res.ok) throw new Error(res.error)
+    const snap = getInvestmentSnapshots(res.user, assets, T0 + 4 * MS_MONTH).closed[0]
+    expect(snap.currentValue).toBeCloseTo(226.46870930880002, 10)
+    expect(snap.currentYield).toBeCloseTo(26.46870930880002, 10)
+
+    // valores gravados prevalecem sobre a projeção
+    const stored: User = {
+      ...res.user,
+      investments: res.user.investments.map((i) => ({ ...i, finalValue: 250, finalYield: 50 })),
+    }
+    const closed = getInvestmentSnapshots(stored, assets, T0 + 4 * MS_MONTH).closed[0]
+    expect(closed).toMatchObject({ currentValue: 250, currentYield: 50, statusLabel: "Finalizado" })
+    expect(closed.series).toHaveLength(4)
   })
 
   it("separa ativos e encerrados", () => {
