@@ -18,7 +18,7 @@ export function listAvatarOptions(): AvatarOption[] {
     ...listDefaultAvatars(),
     {
       id: "av7",
-      src: "/images/avatars/avatar-7.png",
+      src: "/images/avatars/avatar-7.svg",
       alt: "Avatar 7",
       name: "Avatar Ouro",
       free: false,
@@ -27,7 +27,7 @@ export function listAvatarOptions(): AvatarOption[] {
     },
     {
       id: "av8",
-      src: "/images/avatars/avatar-8.png",
+      src: "/images/avatars/avatar-8.svg",
       alt: "Avatar 8",
       name: "Avatar Diamante",
       free: false,

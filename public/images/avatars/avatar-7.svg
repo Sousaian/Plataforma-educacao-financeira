@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="313" height="400" viewBox="0 0 313 400" role="img" aria-labelledby="title">
+  <title id="title">Avatar Ouro</title>
+  <path d="M18 380v-24c0-58 49-92 105-92h67c57 0 105 34 105 92v24" fill="#e9ad26"/>
+  <path d="M111 270l45 51 46-51" fill="#fff1bc"/>
+  <path d="M126 231h61v50c0 32-61 32-61 0z" fill="#a9653e"/>
+  <ellipse cx="156" cy="151" rx="89" ry="106" fill="#bd8054"/>
+  <path d="M68 144V97c0-95 177-95 177 0v47l-24-53c-42 18-89 14-126-4z" fill="#443028"/>
+  <path d="M101 139q16-10 32-3m47 0q18-7 33 3" fill="none" stroke="#443028" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="119" cy="162" r="8" fill="#38291f"/><circle cx="194" cy="162" r="8" fill="#38291f"/>
+  <path d="M132 200q24 29 49 0" fill="#fff8ed" stroke="#633c2b" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M91 83L80 36l40 19 36-34 36 34 40-19-11 47z" fill="#f7c948" stroke="#c58a18" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M156 43l10 13-10 13-10-13z" fill="#fff4bd"/>
+  <circle cx="156" cy="342" r="20" fill="#fff1bc"/><path d="M156 328l4 9 10 1-8 7 3 10-9-5-9 5 3-10-8-7 10-1z" fill="#c58a18"/>
+</svg>

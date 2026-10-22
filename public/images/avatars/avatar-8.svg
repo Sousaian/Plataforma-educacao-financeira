@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="313" height="400" viewBox="0 0 313 400" role="img" aria-labelledby="title">
+  <title id="title">Avatar Diamante</title>
+  <path d="M60 277V112c0-124 193-124 193 0v165z" fill="#193b56"/>
+  <path d="M18 380v-24c0-58 49-92 105-92h67c57 0 105 34 105 92v24" fill="#18b9d5"/>
+  <path d="M126 231h61v50c0 32-61 32-61 0z" fill="#b5764d"/>
+  <path d="M109 272l24 30-10 78m81-108-24 30 10 78" fill="none" stroke="#b5f3fc" stroke-width="10" stroke-linejoin="round"/>
+  <ellipse cx="156" cy="151" rx="89" ry="106" fill="#cd9166"/>
+  <path d="M65 137V98C65 9 249 9 249 98v39c-38-7-75-33-94-62-18 32-53 53-90 62" fill="#193b56"/>
+  <path d="M102 143q15-12 29-3m51 0q15-9 29 3" fill="none" stroke="#193b56" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="119" cy="165" r="8" fill="#263747"/><circle cx="194" cy="165" r="8" fill="#263747"/>
+  <path d="M132 202q24 29 49 0" fill="#fff8ed" stroke="#804c36" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M89 84q67-48 135 0" fill="none" stroke="#6ddff2" stroke-width="10"/>
+  <path d="M139 48h34l13 17-30 32-30-32z" fill="#b5f3fc" stroke="#1a97bc" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M126 65h60m-47-17 17 49 17-49" fill="none" stroke="#48cbe5" stroke-width="3"/>
+  <path d="M146 326h20l9 12-19 22-19-22z" fill="#d9faff"/>
+</svg>
