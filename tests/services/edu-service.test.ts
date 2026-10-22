@@ -141,6 +141,7 @@ describe("fluxo completo: login → missão → loja → investir → resgatar",
     const res = service.withdrawMatured(investmentId)
     if (!res.ok) throw new Error(res.error)
     expect(res.finalValue).toBeCloseTo(226.4687093088, 8)
+    expect(snaps.active[0].currentValue).toBe(res.finalValue)
     expect(res.achievements).toEqual(["yield_10_plus"])
 
     const final = ana()

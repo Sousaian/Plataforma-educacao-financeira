@@ -148,7 +148,7 @@ export function withdrawMatured(
   if (inv.status === "closed") return { ok: false, error: "Já encerrado" }
 
   const asset = assets.find((a) => a.id === inv.assetId)
-  const sim = simulateReturn(asset, inv.months, inv.principal, ctx.now)
+  const sim = simulateReturn(asset, inv.months, inv.principal, inv.startAt)
   const finalValue = sim.ok ? sim.expectedFinal : inv.principal
   const finalYield = finalValue - inv.principal
   const closed: Investment = { ...inv, status: "closed", finalValue, finalYield }
@@ -170,9 +170,8 @@ export function withdrawMatured(
 /**
  * Visão dos investimentos para a carteira/histórico.
  *
- * Comportamento legado preservado: a curva é projetada a partir de `now` (e não de `startAt`),
- * então `currentValue` sempre equivale ao principal e `currentYield` a 0. O valor real do
- * resgate é calculado em `withdrawMatured`. Corrigir isso muda o que é exibido hoje.
+ * A curva é projetada de `startAt` até o vencimento; o valor atual é o último ponto com
+ * t <= min(now, vencimento). Encerrados usam `finalValue`/`finalYield` gravados no resgate.
  */
 export function getInvestmentSnapshots(
   user: User,
@@ -184,10 +183,14 @@ export function getInvestmentSnapshots(
   for (const inv of user.investments) {
     const maturityAt = maturityOf(inv)
     const asset = assets.find((a) => a.id === inv.assetId)
-    const projection = simulateReturn(asset, inv.months, inv.principal, now)
+    const projection = simulateReturn(asset, inv.months, inv.principal, inv.startAt)
     const cutoff = Math.min(now, maturityAt)
     const elapsed = projection.ok ? projection.series.filter((p) => p.t <= cutoff) : []
-    const currentValue = elapsed.length > 0 ? elapsed[elapsed.length - 1].v : inv.principal
+    const projectedValue = elapsed.length > 0 ? elapsed[elapsed.length - 1].v : inv.principal
+    const isClosed = inv.status === "closed"
+    const currentValue = isClosed && inv.finalValue !== undefined ? inv.finalValue : projectedValue
+    const currentYield =
+      isClosed && inv.finalYield !== undefined ? inv.finalYield : currentValue - inv.principal
     const base = {
       id: inv.id,
       assetName: inv.assetName,
@@ -198,10 +201,10 @@ export function getInvestmentSnapshots(
       principal: inv.principal,
       monthlyRate: inv.monthlyRate,
       currentValue,
-      currentYield: currentValue - inv.principal,
+      currentYield,
     }
 
-    if (inv.status === "closed") {
+    if (isClosed) {
       closed.push({ ...base, statusLabel: "Finalizado", canWithdraw: false, series: projection.ok ? projection.series : [] })
     } else {
       const daysToMaturity = Math.ceil((maturityAt - now) / MS_DAY)
