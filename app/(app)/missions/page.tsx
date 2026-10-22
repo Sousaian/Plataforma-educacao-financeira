@@ -1,27 +1,21 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { CheckCircle2, Circle, Coins, ChevronDown, ChevronUp, Calendar, AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { getCurrentUser, listMissionsForCurrent, completeMission, subscribeDB } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
+import { useCurrentUser } from "@/hooks/use-edu"
 import { useToast } from "@/hooks/use-toast"
 
 export default function MissionsPage() {
   const { toast } = useToast()
-  const [tick, setTick] = useState(0)
   const [expandedMission, setExpandedMission] = useState<string | null>(null)
-
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, [])
-
-  const user = getCurrentUser()
-  const missions = listMissionsForCurrent()
+  const user = useCurrentUser()
 
   if (!user) return null
+  const missions = user.missions
 
   const toggleExpanded = (missionId: string) => {
     setExpandedMission(expandedMission === missionId ? null : missionId)
@@ -104,7 +98,7 @@ export default function MissionsPage() {
                           disabled={m.completed}
                           onClick={(e) => {
                             e.stopPropagation()
-                            const res = completeMission(m.id)
+                            const res = eduService.completeMission(m.id)
                             if (res.ok) {
                               toast({ title: "Missão concluída!", description: `+${m.reward} moedas` })
                             } else {

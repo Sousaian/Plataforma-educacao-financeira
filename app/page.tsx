@@ -1,21 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { getCurrentUser } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
+import { useCurrentUser } from "@/hooks/use-edu"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { GraduationCap } from "lucide-react"
 
 export default function HomePage() {
   const router = useRouter()
-  const [user, setUser] = useState(null)
+  const user = useCurrentUser()
 
   useEffect(() => {
-    const currentUser = getCurrentUser()
-    setUser(currentUser)
-
-    if (!currentUser) {
+    if (!eduService.getCurrentUser()) {
       router.replace("/login")
     }
   }, [router])

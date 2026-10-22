@@ -15,9 +15,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { getCurrentUser, addCoinsDemo, subscribeDB } from "@/lib/mock-db"
-import { getPatent, getNextPatentProgress } from "@/lib/patents"
-import { useEffect, useState } from "react"
+import { eduService } from "@/lib/services"
+import { getPatent, getNextPatentProgress } from "@/lib/domain"
+import { useCurrentUser } from "@/hooks/use-edu"
 
 const quick = [
   { href: "/missions", icon: ListTodo, label: "Missões" },
@@ -28,12 +28,7 @@ const quick = [
 ]
 
 export default function DashboardPage() {
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, []) // Empty dependency array ensures this only runs once
-  const user = getCurrentUser()
+  const user = useCurrentUser()
   const patent = getPatent(user?.xp ?? 0)
   const prog = getNextPatentProgress(user?.xp ?? 0)
 
@@ -109,7 +104,7 @@ export default function DashboardPage() {
               Ganhe moedas por desempenho, comportamento e participação. Use-as para prêmios e aprenda a investir!
             </p>
             <Button
-              onClick={() => addCoinsDemo(25)}
+              onClick={() => eduService.addCoinsDemo(25)}
               className="w-full"
               style={{ backgroundColor: "#0A2540", color: "#FFFFFF" }}
             >

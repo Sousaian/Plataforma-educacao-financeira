@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
 import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
@@ -24,7 +24,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const ok = login(email.trim().toLowerCase(), password)
+      const ok = eduService.login(email.trim().toLowerCase(), password)
       if (ok) {
         toast({ title: "Bem-vindo!", description: "Login realizado com sucesso." })
         router.replace("/dashboard")

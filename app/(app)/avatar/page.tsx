@@ -1,20 +1,16 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { getCurrentUser, listAvatarOptions, equipAvatar, subscribeDB } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
 import { Badge } from "@/components/ui/badge"
-import { getPatent } from "@/lib/patents"
+import { getPatent, listAvatarOptions } from "@/lib/domain"
+import { useCurrentUser } from "@/hooks/use-edu"
 
 export default function AvatarPage() {
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, [])
-  const user = getCurrentUser()
+  const user = useCurrentUser()
   const patent = getPatent(user?.xp ?? 0)
   const avatars = useMemo(() => listAvatarOptions(), [])
 
@@ -45,7 +41,7 @@ export default function AvatarPage() {
                 const locked = !owned && a.requiredPatentIndex !== undefined
                 return (
                   <div key={a.id} className={`border rounded-md p-2 ${locked ? "opacity-70" : ""}`}>
-                    <Image src={a.src || "/placeholder.svg"} alt={a.name} width={240} height={240} className="w-full h-auto rounded-md" />
+                    <Image src={a.src || "/placeholder.svg"} alt={a.name ?? a.alt} width={240} height={240} className="w-full h-auto rounded-md" />
                     <div className="mt-2 flex items-center justify-between">
                       <div className="text-sm font-medium">{a.name}</div>
                       {locked && <Badge variant="outline">Patente: {a.requiredPatentName}</Badge>}
@@ -54,7 +50,7 @@ export default function AvatarPage() {
                       className="mt-2 w-full"
                       variant="secondary"
                       disabled={!owned}
-                      onClick={() => equipAvatar(a.id)}
+                      onClick={() => eduService.equipAvatar(a.id)}
                     >
                       {owned ? (user.avatarId === a.id ? "Equipado" : "Equipar") : "Bloqueado"}
                     </Button>

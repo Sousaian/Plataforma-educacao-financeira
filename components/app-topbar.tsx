@@ -1,24 +1,19 @@
 "use client"
 
 import Image from "next/image"
-import { Coins, LogOut, PanelLeft, Medal, Gem } from 'lucide-react'
+import { Coins, LogOut, Medal, Gem } from 'lucide-react'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
-import { getCurrentUser, logout, subscribeDB } from "@/lib/mock-db"
-import { useEffect, useState } from "react"
-import { getPatent } from "@/lib/patents"
+import { eduService } from "@/lib/services"
+import { getPatent } from "@/lib/domain"
+import { useCurrentUser } from "@/hooks/use-edu"
 import { cn } from "@/lib/utils"
 
 export function AppTopbar() {
   const router = useRouter()
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, [])
-  const user = getCurrentUser()
+  const user = useCurrentUser()
   const patent = getPatent(user?.xp ?? 0)
 
   return (
@@ -51,7 +46,7 @@ export function AppTopbar() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  logout()
+                  eduService.logout()
                   router.replace("/login")
                 }}
               >
