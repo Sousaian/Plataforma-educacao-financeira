@@ -1,11 +1,11 @@
 "use client"
 
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { getCurrentUser, subscribeDB } from "@/lib/mock-db"
-import { getPatent } from "@/lib/patents"
+import { getPatent } from "@/lib/domain"
+import { useCurrentUser } from "@/hooks/use-edu"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, Target, TrendingUp } from "lucide-react"
 
@@ -31,15 +31,8 @@ const ACHIEVEMENT_DEFINITIONS = {
 }
 
 export default function ProfilePage() {
-  const [tick, setTick] = useState(0)
   const [showAllHistory, setShowAllHistory] = useState(false)
-
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, [])
-
-  const user = getCurrentUser()
+  const user = useCurrentUser()
   if (!user) return null
   const p = getPatent(user.xp)
 

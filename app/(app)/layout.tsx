@@ -5,14 +5,14 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { AppTopbar } from "@/components/app-topbar"
 import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { getCurrentUser } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
 
 // Authenticated app shell with shadcn Sidebar [^3]
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   useEffect(() => {
-    const u = getCurrentUser()
+    const u = eduService.getCurrentUser()
     if (!u) {
       router.replace("/login")
     }

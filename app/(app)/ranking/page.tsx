@@ -1,19 +1,13 @@
 "use client"
 
 import Image from "next/image"
-import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getRanking, subscribeDB, getCurrentUser } from "@/lib/mock-db"
-import { getPatent } from "@/lib/patents"
+import { getPatent } from "@/lib/domain"
+import { useCurrentUser, useRanking } from "@/hooks/use-edu"
 
 export default function RankingPage() {
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, [])
-  const top = getRanking()
-  const currentUser = getCurrentUser()
+  const top = useRanking()
+  const currentUser = useCurrentUser()
 
   return (
     <div className="space-y-4">

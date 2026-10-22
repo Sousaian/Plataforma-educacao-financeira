@@ -1,15 +1,16 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ShoppingCart, ShieldCheck, Coins } from 'lucide-react'
-import { buyItem, getCurrentUser, listStoreItems, subscribeDB } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
+import { isLockedByPatent, listStoreItems } from "@/lib/domain"
+import { useCurrentUser } from "@/hooks/use-edu"
 import { useToast } from "@/hooks/use-toast"
-import { getPatent } from "@/lib/patents"
 
 const categories = [
   { id: "physical", label: "Prêmios físicos" },
@@ -19,14 +20,8 @@ const categories = [
 
 export default function StorePage() {
   const { toast } = useToast()
-  const [tick, setTick] = useState(0)
-  useEffect(() => {
-    const unsub = subscribeDB(() => setTick((t) => t + 1))
-    return () => unsub()
-  }, [])
-  const user = getCurrentUser()
-  const items = listStoreItems()
-  const patent = getPatent(user?.xp ?? 0)
+  const user = useCurrentUser()
+  const items = useMemo(() => listStoreItems(), [])
 
   const grouped = useMemo(
     () => ({
@@ -62,7 +57,7 @@ export default function StorePage() {
               <TabsContent key={c.id} value={c.id} className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {grouped[c.id].map((item) => {
                   const owned = user.inventory.includes(item.id)
-                  const locked = item.requiredPatentIndex !== undefined && (patent.index < item.requiredPatentIndex)
+                  const locked = isLockedByPatent(item, user.xp)
                   return (
                     <Card key={item.id} className={locked ? "opacity-70" : ""}>
                       <CardContent className="p-3">
@@ -95,7 +90,7 @@ export default function StorePage() {
                               size="sm"
                               disabled={owned || locked || user.balance < item.price}
                               onClick={() => {
-                                const res = buyItem(item.id)
+                                const res = eduService.buyItem(item.id)
                                 if (res.ok) {
                                   toast({ title: "Compra realizada!", description: `Você comprou ${item.name}.` })
                                 } else {

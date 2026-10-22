@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { signup, listDefaultAvatars } from "@/lib/mock-db"
+import { eduService } from "@/lib/services"
+import { listDefaultAvatars, type AvatarOption } from "@/lib/domain"
 import { useToast } from "@/hooks/use-toast"
 
 export default function SignupPage() {
@@ -23,7 +24,7 @@ export default function SignupPage() {
   const [school, setSchool] = useState("")
   const [password, setPassword] = useState("")
   const [avatarId, setAvatarId] = useState<string>("")
-  const [avatars, setAvatars] = useState<{ id: string; src: string; alt: string }[]>([])
+  const [avatars, setAvatars] = useState<AvatarOption[]>([])
 
   useEffect(() => {
     setAvatars(listDefaultAvatars())
@@ -34,7 +35,7 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
-    const ok = signup({
+    const ok = eduService.signup({
       name: name.trim(),
       email: email.trim().toLowerCase(),
       classroom: classroom.trim(),
