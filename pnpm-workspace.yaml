@@ -1,3 +1,11 @@
+# "packages" mantém compatibilidade com pnpm 9 (exige o campo quando o arquivo existe)
+packages:
+  - "."
+
+# pnpm >= 11: dependências autorizadas a rodar scripts de instalação
 allowBuilds:
   "@tailwindcss/oxide": true
+  esbuild: true
+  unrs-resolver: true
+  # images.unoptimized = true → sharp não é usado
   sharp: false
